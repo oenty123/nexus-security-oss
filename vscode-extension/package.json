@@ -1,0 +1,232 @@
+{
+  "name": "nexus-security-pro",
+  "displayName": "Nexus Security Pro",
+  "description": "Real-time SAST analysis: SQL injection, RCE, secrets, SSRF and 50+ vulnerability checks as you type",
+  "version": "2.10.0",
+  "publisher": "nexus-security",
+  "license": "AGPL-3.0",
+  "engines": {
+    "vscode": "^1.75.0"
+  },
+  "capabilities": {
+    "untrustedWorkspaces": {
+      "supported": "limited",
+      "description": "Анализ запускает локальный интерпретатор Python, поэтому требует доверия к рабочей области. В недоверённой папке подсветка отключена."
+    }
+  },
+  "categories": ["Linters", "Programming Languages"],
+  "keywords": ["security", "sast", "vulnerability", "owasp", "linter"],
+  "galleryBanner": {
+    "color": "#0d1117",
+    "theme": "dark"
+  },
+  "activationEvents": [
+    "onLanguage:python",
+    "onLanguage:javascript",
+    "onLanguage:typescript",
+    "onLanguage:go",
+    "onLanguage:java",
+    "onLanguage:ruby",
+    "onLanguage:php"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "nexus.scanFile",
+        "title": "Nexus: Scan Current File",
+        "category": "Nexus Security"
+      },
+      {
+        "command": "nexus.scanWorkspace",
+        "title": "Nexus: Scan Entire Workspace",
+        "category": "Nexus Security"
+      },
+      {
+        "command": "nexus.checkReadability",
+        "title": "Nexus: Check Readability",
+        "category": "Nexus Security"
+      },
+      {
+        "command": "nexus.applyRefactoring",
+        "title": "Оптимизировать и упростить код (весь файл)",
+        "category": "Nexus Security"
+      },
+      {
+        "command": "nexus.applyRefactoringSelection",
+        "title": "Применить безопасные автофиксы к выделению",
+        "category": "Nexus Security"
+      },
+      {
+        "command": "nexus.simplifyFunction",
+        "title": "Упростить функцию (guard clauses, вынос условий)",
+        "category": "Nexus Security"
+      },
+      {
+        "command": "nexus.explainCode",
+        "title": "Объяснить код (структурный разбор)",
+        "category": "Nexus Security"
+      },
+      {
+        "command": "nexus.addDocstrings",
+        "title": "Добавить docstring-заготовки",
+        "category": "Nexus Security"
+      },
+      {
+        "command": "nexus.clearDiagnostics",
+        "title": "Nexus: Clear All Warnings",
+        "category": "Nexus Security"
+      },
+      {
+        "command": "nexus.openSettings",
+        "title": "Открыть настройки Nexus",
+        "category": "Nexus Security",
+        "icon": "$(gear)"
+      },
+      {
+        "command": "nexus.showReport",
+        "title": "Показать журнал находок",
+        "category": "Nexus Security"
+      }
+    ],
+    "menus": {
+      "editor/title": [
+        {
+          "command": "nexus.openSettings",
+          "when": "editorLangId == python",
+          "group": "navigation@9"
+        }
+      ],
+      "editor/context": [
+        {
+          "command": "nexus.applyRefactoringSelection",
+          "when": "editorHasSelection && editorLangId == python",
+          "group": "1modification@1"
+        },
+        {
+          "command": "nexus.applyRefactoring",
+          "when": "editorLangId == python",
+          "group": "1modification@2"
+        },
+        {
+          "command": "nexus.simplifyFunction",
+          "when": "editorLangId == python",
+          "group": "1modification@3"
+        }
+      ]
+    },
+    "keybindings": [
+      {
+        "command": "nexus.applyRefactoringSelection",
+        "key": "ctrl+alt+f",
+        "mac": "cmd+alt+f",
+        "when": "editorHasSelection && editorLangId == python"
+      },
+      {
+        "command": "nexus.applyRefactoring",
+        "key": "ctrl+alt+shift+f",
+        "mac": "cmd+alt+shift+f",
+        "when": "editorLangId == python"
+      }
+    ],
+    "configuration": {
+      "title": "Nexus Security Pro",
+      "properties": {
+        "nexus.pythonPath": {
+          "type": "string",
+          "default": "python",
+          "description": "Путь к интерпретатору Python"
+        },
+        "nexus.cliPath": {
+          "type": "string",
+          "default": "",
+          "description": "Путь к cli.py (по умолчанию ищется в workspace)"
+        },
+        "nexus.binaryPath": {
+          "type": "string",
+          "default": "",
+          "description": "Путь к автономному бинарнику nexus (без Python). Если задан или найден рядом с проектом / в PATH — используется вместо Python+cli.py"
+        },
+        "nexus.runOnSave": {
+          "type": "boolean",
+          "default": true,
+          "description": "Запускать анализ при сохранении файла"
+        },
+        "nexus.runOnType": {
+          "type": "boolean",
+          "default": true,
+          "description": "Запускать анализ при наборе (с задержкой)"
+        },
+        "nexus.debounceMs": {
+          "type": "number",
+          "default": 800,
+          "description": "Задержка перед анализом при наборе (мс)"
+        },
+        "nexus.depth": {
+          "type": "number",
+          "default": 2,
+          "enum": [1, 2, 3],
+          "description": "Глубина анализа: 1=быстро, 2=стандарт, 3=параноик"
+        },
+        "nexus.minSeverity": {
+          "type": "string",
+          "default": "low",
+          "enum": ["critical", "high", "medium", "low"],
+          "description": "Минимальный уровень для отображения"
+        },
+        "nexus.showAntipatterns": {
+          "type": "boolean",
+          "default": true,
+          "description": "Показывать антипаттерны и проблемы сложности кода (помимо уязвимостей безопасности)"
+        },
+        "nexus.refactorLevel": {
+          "type": "number",
+          "default": 1,
+          "enum": [1, 2, 3],
+          "enumDescriptions": [
+            "1 — только безопасные булевы упрощения",
+            "2 — стандарт: + структура, guard clauses, вынос условий",
+            "3 — агрессивно: + именованные константы для известных чисел"
+          ],
+          "description": "Глубина авто-рефакторинга"
+        },
+        "nexus.refactorFormatBlack": {
+          "type": "boolean",
+          "default": false,
+          "description": "Форматировать результат рефакторинга через black (если установлен)"
+        },
+        "nexus.underlineStyle": {
+          "type": "string",
+          "default": "wavy",
+          "enum": ["wavy", "solid", "dotted", "none"],
+          "description": "Стиль подчёркивания находок в коде"
+        },
+        "nexus.showRuleId": {
+          "type": "boolean",
+          "default": true,
+          "description": "Показывать ID правила (напр. PY-SSTI-001) в тексте подсказки"
+        },
+        "nexus.showStatusBar": {
+          "type": "boolean",
+          "default": true,
+          "description": "Показывать значок Nexus со счётчиком находок в статус-баре"
+        },
+        "nexus.showCwe": {
+          "type": "boolean",
+          "default": true,
+          "description": "Показывать ссылку на CWE в тексте находки (напр. CWE-89)"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.75.0",
+    "@types/node": "^18.x",
+    "typescript": "^5.3.0"
+  }
+}

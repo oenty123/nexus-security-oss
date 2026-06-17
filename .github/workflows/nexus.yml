@@ -1,0 +1,38 @@
+name: Nexus Security
+
+# Запускает анализ безопасности на каждый push и pull request.
+# Падает, если найдены критичные или высокие уязвимости.
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+
+jobs:
+  security-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Run engine self-test
+        run: python3 engine/run_tests.py
+
+      - name: Scan codebase
+        run: python3 engine/cli.py . --recursive --fail-on high
+
+      - name: Generate SARIF report
+        if: always()
+        run: python3 engine/cli.py . --recursive --format sarif -o nexus.sarif
+
+      # Загружает результаты во вкладку Security на GitHub (Code scanning)
+      - name: Upload SARIF
+        if: always()
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: nexus.sarif
+        continue-on-error: true

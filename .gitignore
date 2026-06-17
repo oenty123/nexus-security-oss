@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+.gradle/
+build/
+node_modules/
+out/
+*.vsix
+.idea/
+.vscode/
+*.log

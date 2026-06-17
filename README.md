@@ -7,7 +7,7 @@
 [![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](LICENSE)
 [![Languages](https://img.shields.io/badge/languages-23%2B-blue.svg)]()
 [![No cloud](https://img.shields.io/badge/privacy-100%25%20local-brightgreen.svg)]()
-[![CI](https://github.com/<you>/nexus-security/actions/workflows/nexus.yml/badge.svg)]()
+[![CI](https://github.com/oenty123/nexus-security/actions/workflows/nexus.yml/badge.svg)]()
 
 [Русская версия](README.ru.md)
 
@@ -46,8 +46,8 @@ $ python3 cli.py app.py --format json
 ## Quick start
 
 ```bash
-git clone https://github.com/<you>/nexus-security.git
-cd nexus-security
+git clone https://github.com/oenty123/nexus-security-oss.git
+cd nexus-security-oss
 python3 install.py          # finds Python, verifies the engine, prints your paths
 ```
 

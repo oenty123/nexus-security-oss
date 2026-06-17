@@ -1,0 +1,77 @@
+name: Build binaries
+
+# Собирает автономные бинарники `nexus` под Linux, macOS и Windows.
+# Запускается при создании тега-релиза (например v1.0.0) или вручную.
+# Готовые бинарники прикладываются к релизу на GitHub.
+
+on:
+  push:
+    tags:
+      - "v*"          # любой тег вида v1.0.0
+  workflow_dispatch:   # кнопка ручного запуска во вкладке Actions
+
+jobs:
+  build:
+    name: Build on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            artifact: nexus-linux
+            binary: nexus
+          - os: macos-latest
+            artifact: nexus-macos
+            binary: nexus
+          - os: windows-latest
+            artifact: nexus-windows.exe
+            binary: nexus.exe
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install PyInstaller
+        run: pip install pyinstaller
+
+      - name: Build binary
+        working-directory: engine
+        run: pyinstaller nexus.spec
+
+      - name: Rename binary
+        shell: bash
+        run: |
+          mkdir -p out
+          cp "engine/dist/${{ matrix.binary }}" "out/${{ matrix.artifact }}"
+
+      - name: Smoke test (Linux/macOS)
+        if: runner.os != 'Windows'
+        run: |
+          chmod +x "out/${{ matrix.artifact }}"
+          "./out/${{ matrix.artifact }}" examples/vulnerable.py --no-color
+
+      - name: Smoke test (Windows)
+        if: runner.os == 'Windows'
+        run: |
+          & ".\out\${{ matrix.artifact }}" examples\vulnerable.py --no-color
+
+      # Сохраняем как артефакт сборки (можно скачать из вкладки Actions)
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact }}
+          path: out/${{ matrix.artifact }}
+
+      # Если это релиз по тегу — прикладываем бинарник к нему
+      - name: Attach to release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: out/${{ matrix.artifact }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

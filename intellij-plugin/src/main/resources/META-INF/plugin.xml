@@ -1,0 +1,57 @@
+<idea-plugin>
+    <id>com.nexus.security.intellij</id>
+    <name>Nexus Security</name>
+    <version>1.1.0</version>
+    <vendor>Nexus Security</vendor>
+
+    <description><![CDATA[
+        <h2>Nexus Security — SAST-анализатор кода</h2>
+        <p>Находит уязвимости безопасности (SQL-инъекции, XSS, RCE, хардкод-секреты
+        и др.) в коде на Python, JavaScript, TypeScript, Java, Kotlin, PHP, Go и других
+        языках. Анализ выполняется локальным движком Nexus (Python).</p>
+        <p>Требуется установленный Python 3 и файлы анализатора Nexus.</p>
+    ]]></description>
+
+    <change-notes><![CDATA[
+        <p>1.0.0 — первый релиз: анализ текущего файла, подсветка находок,
+        панель результатов, переход к строке.</p>
+    ]]></change-notes>
+
+    <!-- Совместимо со всеми продуктами на платформе IntelliJ -->
+    <depends>com.intellij.modules.platform</depends>
+
+    <extensions defaultExtensionNamespace="com.intellij">
+        <!-- Хранилище настроек (путь к Python и cli.py) -->
+        <applicationService serviceImplementation="com.nexus.security.NexusSettings"/>
+        <!-- Страница настроек -->
+        <applicationConfigurable
+            parentId="tools"
+            instance="com.nexus.security.NexusConfigurable"
+            id="com.nexus.security.NexusConfigurable"
+            displayName="Nexus Security"/>
+        <!-- Панель результатов (Tool Window снизу) -->
+        <toolWindow
+            id="Nexus Security"
+            anchor="bottom"
+            factoryClass="com.nexus.security.NexusToolWindowFactory"
+            icon="AllIcons.Toolwindows.ToolWindowInspection"/>
+
+        <!-- Подсветка находок прямо в коде (волнистые линии) для разных языков.
+             language="" регистрирует аннотатор для ВСЕХ языков. -->
+        <externalAnnotator
+            language=""
+            implementationClass="com.nexus.security.NexusAnnotator"/>
+    </extensions>
+
+    <actions>
+        <action
+            id="Nexus.AnalyzeFile"
+            class="com.nexus.security.AnalyzeFileAction"
+            text="Анализировать через Nexus"
+            description="Запустить анализ безопасности текущего файла">
+            <add-to-group group-id="EditorPopupMenu" anchor="last"/>
+            <add-to-group group-id="ToolsMenu" anchor="last"/>
+            <keyboard-shortcut keymap="$default" first-keystroke="ctrl alt N"/>
+        </action>
+    </actions>
+</idea-plugin>

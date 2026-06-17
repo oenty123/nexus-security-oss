@@ -40,7 +40,7 @@ $ python3 cli.py app.py --format json
 ## Быстрый старт
 
 ```bash
-git clone https://github.com/<you>/nexus-security.git
+git clone https://github.com/oenty123/nexus-security-oss.git
 cd nexus-security/engine
 python3 cli.py путь/к/файлу.py
 ```
