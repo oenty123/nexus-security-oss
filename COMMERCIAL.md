@@ -21,6 +21,6 @@ AGPL's source-disclosure obligations — a separate commercial license is availa
 
 ## Get a license
 
-Contact: <your-email@example.com>  ← TODO: впишите свой контакт
+Contact: Telegram @Oenty_888
 
 Pricing depends on team size and use case. Reach out and we'll work it out.
